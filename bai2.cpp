@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -9,18 +10,16 @@ class Vemaybay
 private:
     string tenchuyen;
     string ngaybay;
-    float giave;
+    int giave;
 
 public:
-    Vemaybay() : giave(0.0f) {}
-
-    Vemaybay(string tenchuyen, string ngaybay, float giave) : tenchuyen(tenchuyen), ngaybay(ngaybay), giave(giave) {}
+    Vemaybay(string tenchuyen, string ngaybay, int giave) : tenchuyen(tenchuyen), ngaybay(ngaybay), giave(giave) {}
 
     ~Vemaybay() {}
 
     void Nhap()
     {
-        cout << "Nhap ten chuyen: ";
+        cout << "Nhap ten chuyen bay: ";
         getline(cin, tenchuyen);
         cout << "Ngay bay: ";
         getline(cin, ngaybay);
@@ -31,10 +30,10 @@ public:
 
     void Xuat()
     {
-        cout << "Ten chuyen: " << tenchuyen << " Ngay bay: " << ngaybay << " Gia ve: " << giave << endl;
+        cout << "Ten chuyen bay: " << tenchuyen << " Ngay bay: " << ngaybay << " Gia ve: " << giave << endl;
     }
 
-    float getgiave() const
+    int getGiave()
     {
         return giave;
     }
@@ -48,8 +47,6 @@ private:
     int tuoi;
 
 public:
-    Nguoi() : tuoi(0) {}
-
     Nguoi(string hoten, string gioitinh, int tuoi) : hoten(hoten), gioitinh(gioitinh), tuoi(tuoi) {}
 
     ~Nguoi() {}
@@ -71,155 +68,100 @@ public:
     }
 };
 
-class Hanhkhach : public Nguoi
+class HanhKhach : Nguoi
 {
 private:
-    vector<Vemaybay> ve;
+    Vemaybay *ve;
     int soluong;
 
 public:
-    Hanhkhach() : soluong(0) {}
+    HanhKhach(string hoten, string gioitinh, int tuoi, Vemaybay *ve, int soluong) : Nguoi(hoten, gioitinh, tuoi), ve(ve), soluong(soluong) {}
 
-    Hanhkhach(string hoten, string gioitinh, int tuoi, int soluong) : Nguoi(hoten, gioitinh, tuoi), soluong(soluong) {}
-
-    ~Hanhkhach() {}
+    ~HanhKhach() {}
 
     void Nhap()
     {
         Nguoi::Nhap();
-        cout << "So luong ve: ";
+        ve->Nhap();
+        cout << "So luong: ";
         cin >> soluong;
         cin.ignore();
-        ve.resize(soluong);
-        for (int i = 0; i < soluong; i++)
-        {
-            cout << "Ve thu " << i + 1 << ": " << endl;
-            ve[i].Nhap();
-        }
     }
 
     void Xuat()
     {
         Nguoi::Xuat();
-        cout << "So luong ve: " << soluong << endl;
-        for (int i = 0; i < soluong; i++)
-        {
-            cout << "Ve thu " << i + 1 << ": " << endl;
-            ve[i].Xuat();
-        }
+        ve->Xuat();
+        cout << "So luong: " << soluong << endl;
     }
 
-    float Tongtien()
+    int tongTien()
     {
-        float sum = 0;
-        for (int i = 0; i < soluong; i++)
-        {
-            sum += ve[i].getgiave();
-        }
-        cout << "Tong tien: " << sum << endl;
-        return sum;
+        return ve->getGiave() * soluong;
     }
 };
 
 int main()
 {
-    Hanhkhach *hanhkhach = nullptr;
-    int tongHanhKhach = 0;
-
-    cout << "1. Nhap thong tin hanh khach" << endl;
-    cout << "2. Xuat thong tin hanh khach" << endl;
-    cout << "3. Sap xep thong tin hanh khach" << endl;
-    cout << "4. Thoat" << endl;
-
+    vector<HanhKhach> hanhKhachs;
     int choice;
 
     do
     {
-        cout << "Chon chuc nang: ";
+        cout << "1. Nhap thong tin hanh khach." << endl;
+        cout << "2. Xuat thong tin hanh khach." << endl;
+        cout << "3. Sap xep thong tin hanh khach." << endl;
+        cout << "4. Thoat" << endl;
+
+        cout << "Lua chon: ";
         cin >> choice;
 
-        try
+        switch (choice)
         {
-            switch (choice)
-            {
-            case 1:
-            {
-                int n;
-                cout << "Nhap so luong hanh khach: ";
-                cin >> n;
-                tongHanhKhach += n;
-                cin.ignore();
-                hanhkhach = new Hanhkhach[n];
-                for (int i = 0; i < n; i++)
-                {
-                    cout << "Hanh khach thu " << i + 1 << ": " << endl;
-                    hanhkhach[i].Nhap();
-                }
-
-                break;
-            }
-
-            case 2:
-                if (hanhkhach == nullptr)
-                {
-                    cout << "Chua nhap thong tin hanh khach" << endl;
-                }
-                else
-                {
-                    for (int i = 0; i < tongHanhKhach; i++)
-                    {
-                        cout << "Hanh khach thu " << i + 1 << ": " << endl;
-                        hanhkhach[i].Xuat();
-                        hanhkhach[i].Tongtien();
-                    }
-                }
-                break;
-
-            case 3:
-                if (hanhkhach == nullptr)
-                {
-                    cout << "Chua nhap thong tin hanh khach" << endl;
-                }
-                else
-                {
-                    for (int i = 0; i < tongHanhKhach - 1; i++)
-                    {
-                        for (int j = i + 1; j < tongHanhKhach; j++)
-                        {
-                            if (hanhkhach[i].Tongtien() < hanhkhach[j].Tongtien())
-                            {
-                                swap(hanhkhach[i], hanhkhach[j]);
-                            }
-                        }
-                    }
-                    cout << "Danh sach hanh khach: " << endl;
-                    for (int i = 0; i < tongHanhKhach; i++)
-                    {
-                        cout << "Hanh khach thu " << i + 1 << ": " << endl;
-                        hanhkhach[i].Xuat();
-                        hanhkhach[i].Tongtien();
-                    }
-                }
-                break;
-
-            case 4:
-                cout << "Goodbye!" << endl;
-                if (hanhkhach != nullptr)
-                {
-                    delete[] hanhkhach;
-                }
-                break;
-
-            default:
-                cout << "Lua chon khong hop le. Vui long chon lai" << endl;
-                break;
-            }
-        }
-        catch (exception const &ex)
+        case 1:
         {
-            cerr << "ERROR: " << ex.what() << endl;
+            int n;
+            cout << "So luong hanh khach: ";
+            cin >> n;
+            cin.ignore();
+            for (int i = 0; i < n; i++)
+            {
+                cout << "Hanh khach " << i + 1 << ":" << endl;
+                HanhKhach hanhKhach("", "", 0, new Vemaybay("", "", 0), 0);
+                hanhKhach.Nhap();
+                hanhKhachs.push_back(hanhKhach);
+            }
+            break;
         }
 
+        case 2:
+        {
+            for (HanhKhach hanhKhach : hanhKhachs)
+            {
+                hanhKhach.Xuat();
+                hanhKhach.tongTien();
+            }
+            break;
+        }
+
+        case 3:
+        {
+            sort(hanhKhachs.begin(), hanhKhachs.end(), [](HanhKhach a, HanhKhach b)
+                 { return a.tongTien() > b.tongTien(); });
+            cout << "Sap xep thanh cong!" << endl;
+            break;
+        }
+
+        case 4:
+        {
+            cout << "Goodbye!" << endl;
+            break;
+        }
+
+        default:
+            cout << "Lua chon khong hop le. Vui long nhap lai." << endl;
+            break;
+        }
     } while (choice != 4);
 
     return 0;
